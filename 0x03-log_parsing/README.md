@@ -1,1 +1,1 @@
-## Log parsing challenge
+## Log parsing challenge.
