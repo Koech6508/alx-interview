@@ -18,5 +18,3 @@ The N queens puzzle is the challenge of placing N non-attacking queens on an N×
 [ Queen](https://en.wikipedia.org/wiki/Queen_%28chess%29)
 
 [Backtracking](https://en.wikipedia.org/wiki/Backtracking)
-
-[zebbyG](https://github.com/zebbyG)
