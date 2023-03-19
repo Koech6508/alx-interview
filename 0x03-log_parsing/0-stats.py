@@ -1,37 +1,43 @@
 #!/usr/bin/python3
 '''a script that reads stdin line by line and computes metrics'''
-
-
 import sys
 
-cache = {'200': 0, '301': 0, '400': 0, '401': 0,
-         '403': 0, '404': 0, '405': 0, '500': 0}
-total_size = 0
-counter = 0
+total_file_size = 0
+status_code_counts = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+line_count = 0
 
-try:
-    for line in sys.stdin:
-        line_list = line.split(" ")
-        if len(line_list) > 4:
-            code = line_list[-2]
-            size = int(line_list[-1])
-            if code in cache.keys():
-                cache[code] += 1
-            total_size += size
-            counter += 1
+for line in sys.stdin:
+    try:
+        parts = line.strip().split()
+        ip_address = parts[0]
+        date = parts[1][1:-1]
+        request = parts[2][1:]
+        status_code = int(parts[3])
+        file_size = int(parts[4])
 
-        if counter == 10:
-            counter = 0
-            print('File size: {}'.format(total_size))
-            for key, value in sorted(cache.items()):
-                if value != 0:
-                    print('{}: {}'.format(key, value))
+        total_file_size += file_size
+        status_code_counts[status_code] += 1
+        line_count += 1
 
-except Exception as err:
-    pass
+        if line_count % 10 == 0:
+            print(f'Total file size: {total_file_size}')
+            for code in sorted(status_code_counts):
+                if status_code_counts[code] > 0:
+                    print(f'{code}: {status_code_counts[code]}')
 
-finally:
-    print('File size: {}'.format(total_size))
-    for key, value in sorted(cache.items()):
-        if value != 0:
-            print('{}: {}'.format(key, value))
+    except:
+        continue
+
+    # handle keyboard interrupt (CTRL + C)
+    except KeyboardInterrupt:
+        print(f'Total file size: {total_file_size}')
+        for code in sorted(status_code_counts):
+            if status_code_counts[code] > 0:
+                print(f'{code}: {status_code_counts[code]}')
+        sys.exit(0)
+
+# print final statistics when stdin is closed
+print(f'Total file size: {total_file_size}')
+for code in sorted(status_code_counts):
+    if status_code_counts[code] > 0:
+        print(f'{code}: {status_code_counts[code]}')
